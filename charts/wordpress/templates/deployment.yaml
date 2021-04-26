@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+  strategy:
+    type: Recreate
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - name: wordpress
+          image: {{ .Values.image.repository }}
+          imagePullPolicy: "IfNotPresent"
+          env:
+          - name: WORDPRESS_DB_USER
+            value: root
+          - name: WORDPRESS_DB_HOST
+            value: mysql-hs
+          - name: MEMCACHED_HOST
+            value: memcached.wordpress:11211
+          ports:
+          - name: http
+            containerPort: 80
+          volumeMounts:
+          - name: wp-ps 
+            mountPath: /var/www/html
+          resources:
+            requests:
+              cpu: 200m
+              memory: 300Mi
+            limits:
+              cpu: 300m
+              memory: 400Mi
+      volumes:
+      - name: wp-ps
+        persistentVolumeClaim:
+          claimName: wp-pvc1

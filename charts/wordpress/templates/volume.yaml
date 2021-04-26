@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wp-pv1
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /srv/nfs/kubedata/web
+    server: 192.168.122.1
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: wp-pvc1
+  namespace: poc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
